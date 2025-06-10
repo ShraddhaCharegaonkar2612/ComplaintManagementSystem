@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "cosmiconfig": "^8.1.3",
+    "jspdf-autotable": "^5.0.2"
+  }
+}

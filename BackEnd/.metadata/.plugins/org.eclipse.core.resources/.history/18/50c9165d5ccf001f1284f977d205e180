@@ -1,0 +1,67 @@
+package com.example.demo.controller;
+
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.mailservice.EmailService;
+import com.example.demo.model.User;
+import com.example.demo.repo.CrudRepo;
+import com.example.demo.services.CrudService;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/user")
+public class CrudRestController {
+     
+	@Autowired
+	private CrudService service;
+	
+	@Autowired
+	private EmailService em;
+	
+	
+	@GetMapping("/getcomplainlist")
+	public List<User> fetchcomplainList() {
+		List<User> products = new ArrayList<User>();
+		products = service.fetchcomplainList();
+		return products;
+	}
+	
+	@PostMapping("/addcomplain")
+	public User saveProduct(@RequestBody  User User) {
+		String complainName = User.getComplainSubject();
+		String body = "Hello "+ User.roleOfComplainer +" from " + User.dept +" department . Your Complain of "+ complainName + " has been sent successfully to Complain Department of VJTI";		
+		em.sendSimpleMail(User.getEmail(), body, "Complain sent Successfully");
+		return service.saveComplainToDB(User);
+		
+	}
+	
+	@GetMapping("/getcomplainbyid/{id}")
+	public User fetchComplainToById(@PathVariable  int id) {
+		return service.fetchComplainToById(id).get();
+		
+	}
+	
+	
+	@DeleteMapping("/deletecomplainbyid/{id}")
+	public String deleteComplainToById(@PathVariable  int id) {
+		return service.deleteComplainToById(id);
+		
+	}
+	
+	
+	
+	
+}

@@ -1,0 +1,75 @@
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.mailservice.EmailService;
+import com.example.demo.model.User;
+import com.example.demo.repo.CrudRepo;
+import com.example.demo.services.CrudService;
+
+import java.util.*;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/user")
+public class CrudRestController {
+     
+    @Autowired
+    private CrudService service;
+    
+    @Autowired
+    private EmailService em;
+
+    @GetMapping("/getcomplainlist")
+    public List<User> fetchcomplainList() {
+        List<User> products = new ArrayList<User>();
+        products = service.fetchcomplainList();
+        return products;
+    }
+
+    @PostMapping("/addcomplain")
+    public User saveProduct(@RequestBody User user) {
+        // Set status to "Logged" automatically when a new complaint is added
+        user.setStatus("Logged");
+        
+        String complainName = user.getComplainSubject();
+        String complainerRole = user.getRoleOfComplainer();
+        String complainerDept = user.getDept();
+
+        // Notify the user who added the complaint
+        String userBody = "Hello " + complainerRole + " from " + complainerDept + 
+                          " department. Your complain of '" + complainName + 
+                          "' has been sent successfully to the Complain Department of VJTI.";
+        em.sendSimpleMail(user.getEmail(), userBody, "Complain Sent Successfully");
+
+        // Notify the admin about the new complaint
+        String adminEmail = "arthris17@gmail.com"; 
+        String adminBody = "A new complaint has been added by a " + complainerRole + 
+                           " from the " + complainerDept + " department. " +
+                           "\n\nComplain Subject: " + complainName + 
+                           "\n\nPlease take necessary action.";
+        em.sendSimpleMail(adminEmail, adminBody, "New Complain Notification");
+
+        // Save the complaint to the database with status set to "Logged"
+        return service.saveComplainToDB(user);
+    }
+
+    @GetMapping("/getcomplainbyid/{id}")
+    public User fetchComplainToById(@PathVariable int id) {
+        return service.fetchComplainToById(id).get();
+    }
+
+    @DeleteMapping("/deletecomplainbyid/{id}")
+    public String deleteComplainById(@PathVariable int id) {
+        return service.deleteComplainToById(id);
+    }
+
+    // New endpoint to update the status of a complaint
+    @PutMapping("/updatecomplaintsstatus")
+    public ResponseEntity<List<User>> updateComplaintsStatus(@RequestBody List<User> complaints) {
+        List<User> updatedComplaints = service.updateComplaintsStatus(complaints);
+        return ResponseEntity.ok(updatedComplaints);
+    }
+}

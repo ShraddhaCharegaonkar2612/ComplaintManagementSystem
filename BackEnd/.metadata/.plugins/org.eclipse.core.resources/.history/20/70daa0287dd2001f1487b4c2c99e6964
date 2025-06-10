@@ -1,0 +1,99 @@
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.mailservice.EmailService;
+import com.example.demo.model.User;
+import com.example.demo.services.CrudService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/user")
+public class CrudRestController {
+
+    @Autowired
+    private CrudService service;
+
+    @Autowired
+    private EmailService em;
+
+    // Fetch all complaints
+    @GetMapping("/getcomplainlist")
+    public List<User> fetchcomplainList() {
+        return service.fetchcomplainList();
+    }
+
+    // Add a new complaint
+    @PostMapping("/addcomplain")
+    public User saveProduct(@RequestBody User user) {
+        String complainName = user.getComplainSubject();
+        String complainerRole = user.getRoleOfComplainer();
+        String complainerDept = user.getDept();
+
+        // Default status for a new complaint is "logged"
+        user.setStatus("logged");
+
+        // Notify the user
+        String userBody = "Hello " + complainerRole + " from " + complainerDept + 
+                          " department. Your complaint '" + complainName + 
+                          "' has been logged successfully.";
+        em.sendSimpleMail(user.getEmail(), userBody, "Complaint Logged");
+
+        // Notify the admin
+        String adminEmail = "admin@vjti.edu";
+        String adminBody = "New complaint logged by " + complainerRole + 
+                           " from the " + complainerDept + " department:\n\n" +
+                           "Subject: " + complainName + "\n" +
+                           "Description: " + user.getComplainDescription();
+        em.sendSimpleMail(adminEmail, adminBody, "New Complaint Logged");
+
+        return service.saveComplainToDB(user);
+    }
+
+    // Fetch a complaint by ID
+    @GetMapping("/getcomplainbyid/{id}")
+    public User fetchComplainToById(@PathVariable int id) {
+        return service.fetchComplainToById(id).orElse(null);
+    }
+
+    // Update the status of a complaint
+    @PostMapping("/updatestatus/{id}/{status}")
+    public String updateStatus(@PathVariable int id, @PathVariable String status) {
+        User user = service.fetchComplainToById(id).orElse(null);
+        if (user != null) {
+            user.setStatus(status);
+            service.saveComplainToDB(user);
+            return "Complaint status updated to " + status;
+        } else {
+            return "Complaint not found.";
+        }
+    }
+    
+    @PutMapping("/updatestatus/{id}")
+    public ResponseEntity<User> updateComplainStatus(@PathVariable int id, @RequestBody Map<String, String> statusUpdate) {
+        Optional<User> optionalComplain = service.fetchComplainToById(id);
+
+        if (optionalComplain.isPresent()) {
+            User complain = optionalComplain.get();
+            complain.setStatus(statusUpdate.get("status")); // Assuming 'status' is passed in the request body
+            User updatedComplain = service.saveComplainToDB(complain);
+            return ResponseEntity.ok(updatedComplain);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    // Delete a complaint by ID
+    @DeleteMapping("/deletecomplainbyid/{id}")
+    public String deleteComplainToById(@PathVariable int id) {
+        return service.deleteComplainToById(id);
+    }
+}

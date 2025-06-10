@@ -1,0 +1,156 @@
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.mailservice.EmailService;
+import com.example.demo.model.User;
+import com.example.demo.repo.CrudRepo;
+import com.example.demo.services.CrudService;
+
+import java.time.LocalDate;
+import java.util.*;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/user")
+public class CrudRestController {
+     
+    @Autowired
+    private CrudService service;
+    
+    @Autowired
+    private EmailService em;
+
+    @GetMapping("/getcomplainlist")
+    public List<User> fetchcomplainList() {
+        List<User> products = new ArrayList<User>();
+        products = service.fetchcomplainList();
+        return products;
+    }
+
+    @PostMapping("/addcomplain")
+    public User saveProduct(@RequestBody User user) {
+        // Set status to "Logged" automatically when a new complaint is added
+        user.setStatus("Logged");
+        
+        String complainName = user.getComplainSubject();
+        String complainerRole = user.getRoleOfComplainer();
+        String complainerDept = user.getDept();
+
+        // Notify the user who added the complaint
+        String userBody = "Hello " + complainerRole + " from " + complainerDept + 
+                          " department. Your complain of '" + complainName + 
+                          "' has been sent successfully to the Complain Department of VJTI.";
+        em.sendSimpleMail(user.getEmail(), userBody, "Complain Sent Successfully");
+
+        // Notify the admin about the new complaint
+        String adminEmail = "snehalmohite54321@gmail.com"; 
+        String adminBody = "A new complaint has been added by a " + complainerRole + 
+                           " from the " + complainerDept + " department. " +
+                           "\n\nComplain Subject: " + complainName + 
+                           "\n\nPlease take necessary action.";
+        em.sendSimpleMail(adminEmail, adminBody, "New Complain Notification");
+
+        // Save the complaint to the database with status set to "Logged"
+        return service.saveComplainToDB(user);
+    }
+
+    @GetMapping("/getcomplainbyid/{id}")
+    public User fetchComplainToById(@PathVariable int id) {
+        return service.fetchComplainToById(id).get();
+    }
+
+    @DeleteMapping("/deletecomplainbyid/{id}")
+    public String deleteComplainById(@PathVariable int id) {
+        return service.deleteComplainToById(id);
+    }
+    
+    @PutMapping("/updatecomplain/{id}")
+    public ResponseEntity<String> updateComplain(
+            @PathVariable("id") int id,
+            @RequestBody User updatedUser) {
+        Optional<User> existingUserOpt = service.fetchComplainToById(id);
+
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+            // Store a list of updated fields for email notification
+            List<String> updatedFields = new ArrayList<>();
+
+            // Compare each field and add the changed ones to the list
+            if (!updatedUser.getComplainSubject().equals(existingUser.getComplainSubject())) {
+                updatedFields.add("Complain Subject");
+                existingUser.setComplainSubject(updatedUser.getComplainSubject());
+            }
+            if (!updatedUser.getComplainDescription().equals(existingUser.getComplainDescription())) {
+                updatedFields.add("Complain Description");
+                existingUser.setComplainDescription(updatedUser.getComplainDescription());
+            }
+            if (!updatedUser.getRoleOfComplainer().equals(existingUser.getRoleOfComplainer())) {
+                updatedFields.add("Role of Complainer");
+                existingUser.setRoleOfComplainer(updatedUser.getRoleOfComplainer());
+            }
+            if (!updatedUser.getDept().equals(existingUser.getDept())) {
+                updatedFields.add("Department");
+                existingUser.setDept(updatedUser.getDept());
+            }
+            if (updatedUser.getRoomNo() != existingUser.getRoomNo()) {
+                updatedFields.add("Room Number");
+                existingUser.setRoomNo(updatedUser.getRoomNo());
+            }
+            if (updatedUser.getFloorNo() != existingUser.getFloorNo()) {
+                updatedFields.add("Floor Number");
+                existingUser.setFloorNo(updatedUser.getFloorNo());
+            }
+            if (!updatedUser.getBuilding().equals(existingUser.getBuilding())) {
+                updatedFields.add("Building");
+                existingUser.setBuilding(updatedUser.getBuilding());
+            }
+            if (!updatedUser.getImageOfSubject().equals(existingUser.getImageOfSubject())) {
+                updatedFields.add("Image of Subject");
+                existingUser.setImageOfSubject(updatedUser.getImageOfSubject());
+            }
+            if (!updatedUser.getEmail().equals(existingUser.getEmail())) {
+                updatedFields.add("Email");
+                existingUser.setEmail(updatedUser.getEmail());
+            }
+            if (!updatedUser.getStatus().equals(existingUser.getStatus())) {
+                updatedFields.add("Status");
+                existingUser.setStatus(updatedUser.getStatus());
+            }
+            if (updatedUser.getCreatedDate() != null && !updatedUser.getCreatedDate().equals(existingUser.getCreatedDate())) {
+                updatedFields.add("Created Date");
+                existingUser.setCreatedDate(updatedUser.getCreatedDate());
+            }
+
+            // Update the complain
+            service.updateComplain(existingUser);
+
+            // Send email notifications
+            if (!updatedFields.isEmpty()) {
+                String updatedData = String.join(", ", updatedFields);
+                String userBody = "Hello, Your complain of "+ existingUser.getComplainSubject() +" has been updated. The following fields have been changed: " + updatedData;
+                em.sendSimpleMail(existingUser.getEmail(), userBody, "Complain Updated");
+
+                String adminBody = "A complaint of "+ existingUser.getComplainSubject() +"  has been updated with the following changes: " + updatedData + 
+                                    "\n\nComplain ID: " + existingUser.getComplainId() +
+                                    "\nPlease take necessary action.";
+                em.sendSimpleMail("arthris17@gmail.com", adminBody, "Complain Updated Notification");
+
+                return ResponseEntity.ok("Complain updated successfully, and notifications sent.");
+            } else {
+                return ResponseEntity.ok("No changes detected.");
+            }
+        } else {
+            return ResponseEntity.notFound().build(); // Return 404 if not found
+        }
+    }
+
+    // New endpoint to update the status of a complaint
+    @PutMapping("/updatecomplaintsstatus")
+    public ResponseEntity<List<User>> updateComplaintsStatus(@RequestBody List<User> complaints) {
+        List<User> updatedComplaints = service.updateComplaintsStatus(complaints);
+        return ResponseEntity.ok(updatedComplaints);
+    }
+}

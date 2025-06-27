@@ -1,7 +1,9 @@
+
 import { Component } from '@angular/core';
 import { NgserviceService } from '../ngservice.service'; // Import your service
 import { Complain } from '../product';
 import { ActivatedRoute, Router } from '@angular/router';
+import { StorageService } from '../services/storage.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'; 
 
@@ -12,15 +14,25 @@ import autoTable from 'jspdf-autotable';
 })
 export class DoneComplaintsComponent {
   public complaints: Complain[] = []; // Complaints data
+  public showProducts = false;
+  public isLoggedIn = false;
+  private roles: string[] = [];
 
   constructor(
     private _service: NgserviceService, // Inject the service to interact with backend
     private _route: Router,
-    private _activatedRoute: ActivatedRoute
+    private _activatedRoute: ActivatedRoute,
+    private storageService: StorageService
   ) {}
 
   ngOnInit(): void {
     this.fetchComplaintsByStatus('Done');
+    this.isLoggedIn = !!this.storageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.storageService.getUser();
+      this.roles = user.roles;
+      this.showProducts = this.roles.includes('ROLE_ADMIN');
+    }
   }
 
   // Method to fetch complaints by status

@@ -22,12 +22,12 @@
 
 /* Update Button (Green) */
 .update-button {
-  background-color: #ffb300; /* Light brown */
+  background-color: #72470b; /* Light brown */
   box-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
 }
 
 .update-button:hover {
-  background-color: #ff8f00; /* Darker brown */
+  background-color: #1c65b9; /* Darker brown */
   box-shadow: 0 0 20px rgba(255, 179, 0, 1);
 }
 
@@ -38,7 +38,7 @@
 
 /* Back Button (Blue) */
 .back-button {
-  background-color: #007bff;
+  background-color: #032336;
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
@@ -52,6 +52,21 @@
   background-color: #004085;
 }
 
+/* View button */
+.view-button {
+  background-color: #520547;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.view-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 0 20px rgba(0, 123, 255, 1);
+}
+
+.view-button:active {
+  box-shadow: 0 0 40px rgba(0, 123, 255, 1);
+  background-color: #004085;
+}
 /* General Container Styles */
 .container {
   background-color: #fff8e1; /* Light yellow */

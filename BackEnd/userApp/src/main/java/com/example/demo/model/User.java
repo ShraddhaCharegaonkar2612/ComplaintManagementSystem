@@ -9,6 +9,8 @@ import java.time.LocalDate;
 
 @Document(collection = "complain")
 public class User {
+    // New field for image after completion
+    private String afterCompletionImage; // Base64 or URL
 
     @Transient
     public static final String SEQUENCE_NAME = "complain_sequence";
@@ -32,8 +34,9 @@ public class User {
     
     // New field for priority
     private String priority; // Priority can be "High" or "Low"
-    
+    private String note; 
     private String mobileNumber;
+    private String reason;
 
 
     // Getters and Setters for all fields including mobileNumber
@@ -48,8 +51,8 @@ public class User {
 
     // Constructor
     public User(long complainId, String complainSubject, String complainDescription, String roleOfComplainer,
-                String dept, int roomNo, int floorNo, String building, String imageOfSubject, String email,
-                LocalDate createdDate, String status, String priority) {
+                String dept, int roomNo, int floorNo, String building, String imageOfSubject, String afterCompletionImage, String email,
+                LocalDate createdDate, String status, String priority,String reason) {
         this.complainId = complainId;
         this.complainSubject = complainSubject;
         this.complainDescription = complainDescription;
@@ -59,21 +62,42 @@ public class User {
         this.floorNo = floorNo;
         this.building = building;
         this.imageOfSubject = imageOfSubject;
+        this.afterCompletionImage = afterCompletionImage;
         this.email = email;
         this.createdDate = createdDate;
         this.status = status;
+        this.note = note;
         this.priority = priority; // Initialize priority
+        this.reason = reason;
     }
 
     // Default constructor
     public User() {
+        this.afterCompletionImage = null;
         this.createdDate = LocalDate.now(); // Automatically set the current date
         this.status = "Logged"; // Default status
+        this.reason = "Not Updated yet"; //Default Reason
         this.priority = "Low"; // Default priority
     }
 
     // Getters and Setters
+    public String getReason() {
+        return reason;   
+    }
 
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+    
+    public String getAfterCompletionImage() {
+        return afterCompletionImage;
+    }
+
+    public void setAfterCompletionImage(String afterCompletionImage) {
+        this.afterCompletionImage = afterCompletionImage;
+    }
+    
+    
     public long getComplainId() {
         return complainId;
     }
@@ -177,6 +201,14 @@ public class User {
 
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+    
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
 }

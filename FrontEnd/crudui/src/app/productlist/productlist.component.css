@@ -134,3 +134,51 @@
   color: red;
 }
 
+
+
+/* Print Button */
+.btn-print {
+  background-color: #3f51b5; /* Dark Blue */
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  border-radius: 8px;
+}
+
+.btn-print:hover {
+  background-color: #303f9f; /* Darker Blue */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Add to your existing CSS */
+@media print {
+  .no-print, .no-print * {
+    display: none !important;
+  }
+  
+  /* Improve table layout for printing */
+  table {
+    width: 100% !important;
+    font-size: 12px;
+  }
+  
+  /* Ensure proper spacing */
+  th, td {
+    padding: 4px !important;
+  }
+  
+  /* Force background colors to print */
+  .table-header {
+    background-color: #F5DEB3 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* Hide images or make them smaller */
+  .img-thumbnail {
+    max-width: 50px !important;
+    height: auto !important;
+  }
+}

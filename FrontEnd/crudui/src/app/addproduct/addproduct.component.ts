@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import { NgserviceService } from '../ngservice.service';
 import { Complain } from '../product';
 import Swal from 'sweetalert2';
+import { StorageService } from '../services/storage.service';
 
 @Component({
   selector: 'app-addproduct',
@@ -11,12 +12,22 @@ import Swal from 'sweetalert2';
   styleUrls: ['./addproduct.component.css']
 })
 export class AddproductComponent {
+  showProducts = false;
+  isLoggedIn= false;
+  private roles: string[] = [];
+  public complaint: Complain = new Complain(0, "", "", "", "", "", 0, 0, "", "", "", "", "", "","");
 
-  public complaint: Complain = new Complain(0, "", "", "","","", 0, 0, "", "", "", "", "", "");
+  constructor(private _route: Router, private _service: NgserviceService, private storageService: StorageService) {}
 
-  constructor(private _route: Router, private _service: NgserviceService) {}
-
-  ngOnInit() {}
+  ngOnInit() {
+    this.isLoggedIn = !!this.storageService.getToken();
+    
+    if (this.isLoggedIn) {
+      const user = this.storageService.getUser();
+      this.roles = user.roles;
+      this.showProducts = this.roles.includes('ROLE_ADMIN');
+    }
+  }
 
   addProductformsubmit() {
     this._service.addproductToRemote(this.complaint).subscribe({
@@ -45,22 +56,6 @@ export class AddproductComponent {
       }
     });
   }
-
-  departments: string[] = [
-    'Civil & Environmental Engineering',
-    'Computer Engineering & Information Technology',
-    'Electrical Engineering',
-    'Mechanical Engineering',
-    'Production Engineering',
-    'Structural Engineering',
-    'Textile Manufactures',
-    'Humanities & Management',
-    'Mathematics',
-    'Master of Computer Applications',
-    'Physics',
-    'Technical & Applied Chemistry'
-  ];
-  roles: string[] = ['Student', 'Faculty', 'Other'];
 
   togglePriority(event: any) {
     this.complaint.priority = event.target.checked ? 'High' : 'Low';

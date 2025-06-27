@@ -13,6 +13,9 @@ export class Complain {
     status: string;
     createdDate: string; // Use string to handle the `LocalDate` from Spring Boot
     priority: string;
+    note : string;
+    reason?: string;
+    afterCompletionImage?: string;;
 
     constructor(
         complainId: number,
@@ -28,7 +31,9 @@ export class Complain {
         email: string,
         status: string,
         createdDate: string,
-        priority: string
+        priority: string,
+        note : string,
+        reason?: string
     ) {
         this.complainId = complainId;
         this.complainSubject = complainSubject;
@@ -44,6 +49,7 @@ export class Complain {
         this.status= status;
         this.createdDate = createdDate;
         this.priority = priority;
-        
+        this.note = note;
+        this.reason = reason;
     }
 }

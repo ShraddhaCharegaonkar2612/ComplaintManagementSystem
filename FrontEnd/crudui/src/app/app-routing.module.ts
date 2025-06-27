@@ -12,6 +12,8 @@ import { LoggedComplaintsComponent } from './logged-complaints/logged-complaints
 import { AssignedComplaintsComponent } from './assigned-complaints/assigned-complaints.component';
 import { DoneComplaintsComponent } from './done-complaints/done-complaints.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 const routes: Routes = [
 {path: '',component:FrontpageComponent} , 
@@ -27,6 +29,8 @@ const routes: Routes = [
 {path: 'assigned',component:AssignedComplaintsComponent},
 {path: 'done',component:DoneComplaintsComponent},
 {path: 'dashboard',component:DashboardComponent}
+,{path: 'forgot-password', component: ForgotPasswordComponent}
+,{path: 'reset-password', component: ResetPasswordComponent}
 ];
 
 @NgModule({

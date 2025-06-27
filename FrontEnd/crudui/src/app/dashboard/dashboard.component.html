@@ -52,47 +52,46 @@
       <!-- Left Side: Metrics -->
       <div class="col-md-8">
         <div class="row">
-          <a class="col-md-6 mb-3" style=" text-decoration: none; color: black;" routerLink="/logged">
+          <div class="col-md-6 mb-3">
             <div class="card shadow-sm border-0" style="background-color: #D2B48C;">
               <div class="card-body text-center">
                 <h5 class="card-title font-weight-bold">Logged Complaints</h5>
                 <p class="card-text display-4">{{ dashboardMetrics.loggedCount }}</p>
               </div>
             </div>
-          
-        </a>
-          <a class="col-md-6 mb-3" style=" text-decoration: none; color: black;" routerLink="/assigned">
+          </div>
+          <div class="col-md-6 mb-3">
             <div class="card shadow-sm border-0" style="background-color: #D2B48C;">
               <div class="card-body text-center">
                 <h5 class="card-title font-weight-bold">In Progress</h5>
                 <p class="card-text display-4">{{ dashboardMetrics.inProgressCount }}</p>
               </div>
             </div>
-          </a>
-          <a class="col-md-6 mb-3" style=" text-decoration: none; color: black;" routerLink="/done">
+          </div>
+          <div class="col-md-6 mb-3">
             <div class="card shadow-sm border-0" style="background-color: #D2B48C;">
               <div class="card-body text-center">
                 <h5 class="card-title font-weight-bold">Resolved Complaints</h5>
                 <p class="card-text display-4">{{ dashboardMetrics.doneCount }}</p>
               </div>
-            </div>         
-        </a>
+            </div>
+          </div>
           <div class="col-md-6 mb-3">
-            <div class="card shadow-sm border-0" style="background-color: #D2B48C;" routerLink="/productlist">
+            <div class="card shadow-sm border-0" style="background-color: #D2B48C;">
               <div class="card-body text-center">
-                <h5 class="card-title font-weight-bold">Total Complaints</h5>
+                <h5 class="card-title font-weight-bold">This Week</h5>
                 <p class="card-text display-4">{{ dashboardMetrics.thisWeekComplaints }}</p>
               </div>
             </div>
           </div>
-          <!-- <div class="col-md-6 mb-3">
+          <div class="col-md-6 mb-3">
             <div class="card shadow-sm border-0" style="background-color: #D2B48C;">
               <div class="card-body text-center">
-                <h5 class="card-title font-weight-bold">Resolved Complaints</h5>
+                <h5 class="card-title font-weight-bold">Resolved After Week</h5>
                 <p class="card-text display-4">{{ dashboardMetrics.resolvedAfterWeek }}</p>
               </div>
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
   

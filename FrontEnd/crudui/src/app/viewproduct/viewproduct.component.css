@@ -1,7 +1,10 @@
+
+
 /* General container styling */
 .container {
     margin-top: 30px;
     padding: 20px;
+    font-family: "Tiro Devanagari Marathi", "Nirmala UI", Arial;
   }
   
   /* Heading styling */
@@ -156,4 +159,105 @@
   50% {
     box-shadow: 0 0 20px #e74c3c, 0 0 30px #e74c3c;
   }
+}
+
+/* Print Button Styling */
+.print-button {
+  background-color: #28a745;
+}
+
+.print-button:hover {
+  background-color: #218838;
+}
+
+/* Button Spacer */
+.button-spacer {
+  display: inline-block;
+  width: 20px; /* Adjust this value to increase/decrease spacing */
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+  .button-spacer {
+    display: block;
+    height: 10px;
+    width: 0;
+  }
+}
+
+/* Print-specific styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    padding: 20px;
+    font-size: 14px;
+    background: white !important;
+  }
+  
+  .product-container {
+    box-shadow: none !important;
+    background: white !important;
+    padding: 0 !important;
+  }
+  
+  .product-wrapper {
+    flex-direction: column !important;
+    gap: 15px !important;
+  }
+  
+  .product-image, .product-details {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+  }
+  
+  .product-image img {
+    max-width: 50% !important;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  h2 {
+    background: none !important;
+    color: black !important;
+    -webkit-text-fill-color: initial !important;
+  }
+  
+  .priority-display {
+    position: static !important;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  footer {
+    page-break-after: always;
+  }
+  
+  /* Force colors to print */
+  .high-priority {
+    background-color: #e74c3c !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Marathi Button Styling */
+.marathi-button {
+  background-color: #17a2b8; /* Teal color */
+  margin-left: 10px;
+}
+
+.marathi-button:hover {
+  background-color: #138496; /* Darker teal */
+}
+
+/* Ensure proper spacing between buttons */
+.text-center.mt-4 {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
 }

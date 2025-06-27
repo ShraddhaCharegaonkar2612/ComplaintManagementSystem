@@ -24,19 +24,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import security.jwt.jwt.JwtUtils;
 import security.jwt.services.UserDetailsImpl;
 import security.jwt.services.UserDetailsServiceImpl;
 import security.payload.request.LoginRequest;
 import security.payload.request.SignUpRequest;
+import security.payload.request.ForgotPasswordRequest;
+import security.payload.request.ResetPasswordRequest;
 import security.payload.response.MessageResponse;
 import security.payload.response.UserInfoResponse;
 import security.pojo.ERole;
 import security.pojo.Role;
 import security.pojo.User;
+import security.pojo.PasswordResetToken;
 import security.repository.RoleRepository;
 import security.repository.UserRepository;
+import security.repository.PasswordResetTokenRepository;
+import security.service.EmailService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -52,6 +56,52 @@ public class AuthController {
 	PasswordEncoder encoder;
 	@Autowired
 	JwtUtils jwtUtils;
+
+	@Autowired
+	PasswordResetTokenRepository passwordResetTokenRepository;
+
+	@Autowired
+	EmailService emailService;
+
+	@PostMapping("/forgot-password")
+	public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+		return userRepository.findByEmail(request.getEmail())
+				.map(user -> {
+					// Remove old OTPs
+					passwordResetTokenRepository.deleteByUserId(user.getId());
+					// Generate OTP (6 digit)
+					String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
+					java.util.Calendar cal = java.util.Calendar.getInstance();
+					cal.add(java.util.Calendar.MINUTE, 10); // 10 min expiry
+					PasswordResetToken resetToken = new PasswordResetToken(otp, user.getId(), cal.getTime());
+					passwordResetTokenRepository.save(resetToken);
+					// Send OTP via email
+					emailService.sendEmail(user.getEmail(), "Password Reset OTP",
+						"Your OTP for password reset is: " + otp + "\nIt is valid for 10 minutes.");
+					return ResponseEntity.ok(new MessageResponse("OTP sent to your email."));
+				})
+				.orElseGet(() -> ResponseEntity.badRequest().body(new MessageResponse("Email not found.")));
+	}
+
+	@PostMapping("/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+		return userRepository.findByEmail(request.getEmail())
+				.map(user -> passwordResetTokenRepository.findByOtp(request.getOtp())
+						.map(otpEntity -> {
+							if (!otpEntity.getUserId().equals(user.getId())) {
+								return ResponseEntity.badRequest().body(new MessageResponse("OTP does not match user."));
+							}
+							if (otpEntity.getExpiryDate().before(new java.util.Date())) {
+								return ResponseEntity.badRequest().body(new MessageResponse("OTP expired."));
+							}
+							user.setPassword(encoder.encode(request.getNewPassword()));
+							userRepository.save(user);
+							passwordResetTokenRepository.deleteByUserId(user.getId());
+							return ResponseEntity.ok(new MessageResponse("Password reset successful."));
+						})
+						.orElseGet(() -> ResponseEntity.badRequest().body(new MessageResponse("Invalid OTP."))))
+				.orElseGet(() -> ResponseEntity.badRequest().body(new MessageResponse("Email not found.")));
+	}
 
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;

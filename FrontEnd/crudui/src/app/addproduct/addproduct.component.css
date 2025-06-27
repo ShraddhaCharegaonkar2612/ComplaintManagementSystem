@@ -39,12 +39,12 @@ label {
 
 .glowing-button:hover {
   box-shadow: 0 0 20px rgba(255, 179, 0, 1);
-  background-color: #ff8f00; /* Darker brown */
+  background-color: #09ff00; /* Darker brown */
 }
 
 .glowing-button:active {
   box-shadow: 0 0 40px rgba(255, 179, 0, 1);
-  background-color: #e65100; /* Even darker brown */
+  background-color: #32e600; /* Even darker brown */
 }
 
 /* Switch Styling */

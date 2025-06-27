@@ -9,8 +9,13 @@
 
   <div class="product-wrapper" *ngIf="product">
     <!-- Left Side: Product Image -->
-    <div class="product-image">
+    <div class="product-image" style="display: flex; flex-direction: column; align-items: center;">
       <img [src]="product.imageOfSubject" alt="Complain Image" class="img-fluid rounded shadow-lg">
+      <ng-container *ngIf="product.afterCompletionImage">
+        <div style="height: 32px;"></div> <!-- Add vertical space between images -->
+        <label style="display:block;"><strong>Completed Image:</strong></label>
+        <img [src]="product.afterCompletionImage" alt="Completed Image" style="max-width:200px;max-height:200px;" />
+      </ng-container>
     </div>
 
     <!-- Right Side: Product Details -->
@@ -59,15 +64,26 @@
         <label><strong>Created Date:</strong></label>
         <p>{{ product.createdDate }}</p>
       </div>
+      <div class="form-group" *ngIf="product.reason">
+        <label><strong>Reason for Status Change:</strong></label>
+        <p>{{ product.reason }}</p>
+      </div>
+      <div class="form-group no-print" *ngIf="showProducts">
+        <label><strong>Note:</strong></label>
+        <p>{{ product.note }}</p>
+      </div>
     </div>
   </div>
 
-  <div class="text-center mt-4">
+  <div class="text-center mt-4 no-print">
     <button class="btn btn-primary back-button glowing-button" (click)="gotolist()">Back</button>
+    <button class="btn btn-info edit-button glowing-button" (click)="goToEditProduct(product.complainId)">Edit</button>
+    <button class="btn btn-success print-button glowing-button" (click)="printDetails()">Print Details</button>
+    <button class="btn btn-info marathi-button glowing-button" (click)="printMarathi()">मराठीत छापा</button>
   </div>
 </div>
 
-<footer class="bg-dark text-white py-3 text-center">
+<footer class="bg-dark text-white py-3 text-center no-print">
   <p class="mb-0">&copy; 2025 VJTI Mumbai - Complaint Management System</p>
   <p class="mb-0">Developed as part of an academic project by VJTI students.</p>
 </footer>

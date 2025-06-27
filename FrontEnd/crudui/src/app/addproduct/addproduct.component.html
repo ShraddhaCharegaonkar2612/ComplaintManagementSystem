@@ -11,7 +11,7 @@
         <option value="Plumbing">Plumbing</option>
         <option value="Carpentry">Carpentry</option>
         <option value="Civil/Structural">Civil/Structural</option>
-        <option value="Housekeeping and Cleaning">Housekeeping and Cleaning</option>
+        <option value="Housekeeping and Cleaning">Cleaning & Gardening</option>
         <option value="IT and Network">IT and Network</option>
         <option value="Painting and Aesthetics">Painting and Aesthetics</option>
         <option value="Equipment Maintenance">Equipment Maintenance</option>
@@ -24,28 +24,22 @@
       <textarea class="form-control" id="complainDescription" required [(ngModel)]="complaint.complainDescription" name="complainDescription"></textarea>
     </div>
 
-    <!-- Role of Complainer -->
+    <!-- Complain Role of Complainer -->
     <div class="form-group">
       <label for="roleOfComplainer" class="font-weight-bold">Role of Complainer:</label>
-      <select class="form-control" id="roleOfComplainer" required [(ngModel)]="complaint.roleOfComplainer" name="roleOfComplainer">
-        <option value="" disabled selected>Select Role</option>
-        <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-      </select>
+      <input type="text" class="form-control" id="roleOfComplainer" required [(ngModel)]="complaint.roleOfComplainer" name="roleOfComplainer">
     </div>
 
-    <!-- Mobile Number -->
+  <!-- Mobile Number -->
     <div class="form-group">
       <label for="mobileNumber" class="font-weight-bold">Mobile Number:</label>
       <input type="tel" class="form-control" id="mobileNumber" required [(ngModel)]="complaint.mobileNumber" name="mobileNumber" pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit mobile number">
     </div> 
-
+    
     <!-- Department -->
     <div class="form-group">
       <label for="dept" class="font-weight-bold">Department:</label>
-      <select class="form-control" id="dept" required [(ngModel)]="complaint.dept" name="dept">
-        <option value="" disabled selected>Select Department</option>
-        <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
-      </select>
+      <input type="text" class="form-control" id="dept" required [(ngModel)]="complaint.dept" name="dept">
     </div>
 
     <!-- Room Number -->
@@ -87,6 +81,13 @@
       </label>
       <span class="ml-2">{{ complaint.priority === 'High' ? 'High' : 'Low' }}</span>
     </div>
+
+    <!-- Complain Description -->
+    <div class="form-group" *ngIf="showProducts">
+      <label for="note" class="font-weight-bold">Note:</label>
+      <textarea class="note" id="note" required [(ngModel)]="complaint.note" name="note"></textarea>
+    </div>
+
 
     <div class="text-center mt-4">
       <button type="submit" class="btn btn-success glowing-button">Submit</button>&nbsp;&nbsp;&nbsp;&nbsp;

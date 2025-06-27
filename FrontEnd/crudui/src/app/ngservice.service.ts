@@ -30,7 +30,7 @@ export class NgserviceService {
     return this._http.delete<any>(`http://localhost:8091/user/deletecomplainbyid/${complainId}?reason=${reason}`);
   }
 
-  // Method to update the product (complain) using PUT
+ // Method to update the product (complain) using PUT
   updateProductToRemote(id: number, product: Complain): Observable<any> {
     return this._http.put<any>(`http://localhost:8091/user/updatecomplain/${id}`, product);  // PUT request for updating the product
   }
@@ -39,6 +39,8 @@ export class NgserviceService {
   updateComplaintsStatus(complaints: Complain[]): Observable<any> {
     return this._http.put<any>("http://localhost:8091/user/updatecomplaintsstatus", complaints);
   }
+
+  
 
 
   getDashboardMetrics(): Observable<any> {

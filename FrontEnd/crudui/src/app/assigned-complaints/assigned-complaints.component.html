@@ -41,23 +41,33 @@
         <td>{{ complaint.building }}</td>
         <td>
           <img [src]="complaint.imageOfSubject" alt="Complaint Image" width="50" height="50" />
+          <div *ngIf="complaint.afterCompletionImage">
+            <br />
+            <strong>Completed Image:</strong><br />
+            <img [src]="complaint.afterCompletionImage" alt="Completed Image" width="50" height="50" />
+          </div>
         </td>
         <td>{{ complaint.email }}</td>
         <td>{{ complaint.createdDate | date: 'short' }}</td>
         <td>
-          <select
-            [(ngModel)]="complaint.status"
-            [ngClass]="{
-              'status-logged': complaint.status === 'Logged',
-              'status-assigned': complaint.status === 'Assigned',
-              'status-done': complaint.status === 'Done'
-            }"
-          >
-            <option value="Logged">Logged</option>
-            <option value="Assigned">Assigned</option>
-            <option value="Done">Done</option>
-          </select>
-          <button type="button" class="btn btn-save" (click)="saveStatusChanges()">Save Changes</button>
+          <ng-container *ngIf="showProducts; else statusText">
+            <select
+              [ngModel]="complaint.status"
+              (ngModelChange)="onStatusChange(complaint, complaint.status, $event)"
+              [ngClass]="{
+                'status-logged': complaint.status === 'Logged',
+                'status-assigned': complaint.status === 'Assigned',
+                'status-done': complaint.status === 'Done'
+              }"
+            >
+              <option value="Logged">Logged</option>
+              <option value="Assigned">Assigned</option>
+              <option value="Done">Done</option>
+            </select>
+          </ng-container>
+          <ng-template #statusText>
+            {{ complaint.status }}
+          </ng-template>
         </td>
         <td class="action-buttons">
           <!-- <button type="button" class="btn btn-edit" (click)="goToEditComplaint(complaint.complainId)">Edit</button> -->

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgserviceService } from '../ngservice.service';
 import Swal from 'sweetalert2';
 import { Complain } from '../product';
+import { StorageService } from '../services/storage.service';
 
 @Component({
   selector: 'app-editproduct',
@@ -10,13 +11,33 @@ import { Complain } from '../product';
   styleUrls: ['./editproduct.component.css']
 })
 export class EditproductComponent {
-  public complaint: Complain = new Complain(0, "", "", "","", "", 0, 0, "", "", "", "", "Low", "");
+  public complaint: Complain = new Complain(
+    0,                // complainId: number
+    "",               // complainSubject: string
+    "",               // complainDescription: string
+    "",               // roleOfComplainer: string
+    "",               // mobileNumber: string
+    "",               // dept: string
+    0,                // roomNo: number
+    0,                // floorNo: number
+    "",               // building: string
+    "",               // imageOfSubject: string
+    "",               // email: string
+    "",               // status: string
+    "",               // createdDate: string
+    "Low",            // priority: string
+    "",""                // note: string
+    // reason?: string (optional, can be omitted or set as needed)
+  );
   public isHighPriority: boolean = false; // Reflects the toggle state
-
+  showProducts = false;
+  isLoggedIn= false;
+  private roles: string[] = [];
   constructor(
     private _route: Router,
     private _service: NgserviceService,
-    private _activatedRoute: ActivatedRoute
+    private _activatedRoute: ActivatedRoute,
+    private storageService: StorageService
   ) {}
 
   ngOnInit() {
@@ -28,11 +49,19 @@ export class EditproductComponent {
       },
       error: (error) => console.log("Error occurred")
     });
+
+    this.isLoggedIn = !!this.storageService.getToken();
+    
+    if (this.isLoggedIn) {
+      const user = this.storageService.getUser();
+      this.roles = user.roles;
+      this.showProducts = this.roles.includes('ROLE_ADMIN');
+    }
   }
   
   updateProductformsubmit() {
     // Reflect toggle in complaint priority
-    this.complaint.priority = this.isHighPriority ? 'High' : 'Low';
+       this.complaint.priority = this.isHighPriority ? 'High' : 'Low';
     
     let id = this.complaint.complainId;
   
@@ -50,7 +79,7 @@ export class EditproductComponent {
           
           Swal.fire({
             title: 'Complaint Updated',
-            text: 'The Complaint has been updated successfully.',
+            text: 'The priority has been updated successfully.',
             icon: 'success',
             confirmButtonText: 'OK'
           }).then((result) => {
@@ -68,7 +97,7 @@ export class EditproductComponent {
         console.log("Error occurred while updating complaint: ", error);
         Swal.fire({
           title: 'Complaint Updated',
-          text: 'The Complain has been updated successfully.',
+          text: 'The priority has been updated successfully.',
           icon: 'success',
           confirmButtonText: 'OK'
         }).then((result) => {
@@ -82,9 +111,15 @@ export class EditproductComponent {
   }
   
 
+
   gotolist() {
     console.log('Go back');
     this._route.navigate(['productlist']);
+  }
+
+  goToViewProduct(complainId: number) {
+    console.log('Viewing complaint with id ' + complainId);
+    this._route.navigate(['/viewproduct', complainId]);
   }
 
   togglePriority() {

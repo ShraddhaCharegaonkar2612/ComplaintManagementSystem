@@ -24,6 +24,7 @@
         <th scope="col">Floor No.</th>
         <th scope="col">Building</th>
         <th scope="col">Image of Subject</th>
+        <th scope="col">After Completion Image</th>
         <th scope="col">Email</th>
         <th scope="col">Created Date</th>
         <th scope="col">Status</th>
@@ -51,22 +52,32 @@
         <td>
           <img [src]="complaint.imageOfSubject" alt="Complaint Image" width="50" height="50" />
         </td>
+        <td>
+          <ng-container *ngIf="complaint.afterCompletionImage">
+            <img [src]="complaint.afterCompletionImage" alt="After Completion Image" width="50" height="50" />
+          </ng-container>
+        </td>
         <td>{{ complaint.email }}</td>
         <td>{{ complaint.createdDate | date: 'short' }}</td>
         <td>
-          <select
-            [(ngModel)]="complaint.status"
-            [ngClass]="{
-              'status-logged': complaint.status === 'Logged',
-              'status-assigned': complaint.status === 'Assigned',
-              'status-done': complaint.status === 'Done'
-            }"
-          >
-            <option value="Logged">Logged</option>
-            <option value="Assigned">Assigned</option>
-            <option value="Done">Done</option>
-          </select>
-          <button type="button" class="btn btn-save" (click)="saveStatusChanges()">Save Changes</button>
+          <ng-container *ngIf="showProducts; else statusText">
+            <select
+              [(ngModel)]="complaint.status"
+              [ngClass]="{
+                'status-logged': complaint.status === 'Logged',
+                'status-assigned': complaint.status === 'Assigned',
+                'status-done': complaint.status === 'Done'
+              }"
+            >
+              <option value="Logged">Logged</option>
+              <option value="Assigned">Assigned</option>
+              <option value="Done">Done</option>
+            </select>
+            <button type="button" class="btn btn-save" (click)="saveStatusChanges()">Save Changes</button>
+          </ng-container>
+          <ng-template #statusText>
+            {{ complaint.status }}
+          </ng-template>
         </td>
         <td class="action-buttons">
           <!-- <button type="button" class="btn btn-edit" (click)="goToEditComplaint(complaint.complainId)">Edit</button> -->
